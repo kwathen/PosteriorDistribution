@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-
+#include "NormalDistribution.h"
 #include "PosteriorDistribution.h"
-#include "boost/random/normal_distribution.hpp"
+//#include "boost/random/normal_distribution.hpp"
 
 class RandomWalkMetropHast
 {
@@ -16,10 +16,12 @@ public:
 private:
 
 	void SetJumpDistributions( );
-	std::vector< boost::random::normal_distribution<> > m_vJumpDist;
+	std::vector< NormalDistribution > m_vJumpDist;
+	//std::vector< boost::random::normal_distribution<> > m_vJumpDist;
 
 	PosteriorDistribution m_Post;
-	boost::math::normal m_Proposal;
+	//boost::math::normal m_Proposal;
+	NormalDistribution m_Proposal;
 
 	
 

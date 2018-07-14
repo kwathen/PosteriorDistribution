@@ -1,10 +1,7 @@
 #pragma once
 
-//#include <BiostatGeneral.h>
 #include <vector>
-
-#include "boost/math/distributions/normal.hpp"
-
+#include "NormalDistribution.h"
 
 class PosteriorDistribution
 {
@@ -24,6 +21,6 @@ private:
 	double						m_dPriorMean;
 	double						m_dPriorSD;
 	int                         m_nQtyDataPoints;
-	boost::math::normal_distribution<> m_PriorMu;
+	NormalDistribution          m_PriorMu;
 
 };
