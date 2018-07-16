@@ -8,6 +8,7 @@
 class RandomWalkMetropHast
 {
 public:
+	RandomWalkMetropHast() {}
 	RandomWalkMetropHast( PosteriorDistribution & post );
 	~RandomWalkMetropHast();
 	void Sample(int nQtySample, int nBurnIn, std::vector<double> &vSamples);
