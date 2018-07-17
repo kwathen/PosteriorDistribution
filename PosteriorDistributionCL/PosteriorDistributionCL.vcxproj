@@ -176,6 +176,9 @@
     </ClCompile>
     <ClCompile Include="SimpleNormalPosterior.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="CheckBLRM.R" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

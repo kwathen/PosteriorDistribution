@@ -30,7 +30,7 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, boost::numeric::u
 	int nQtyParams = 2;
 
 	cout.precision(3);
-	mSamples.resize(nQtySample, nQtyParams, 0.0);
+	mSamples.resize(nQtySample, nQtyParams, -1000.0);
 	SetJumpDistributions();
 
 
@@ -118,7 +118,7 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, boost::numeric::u
 		//vSamples[i] = vParams[0];
 
 	}
-	cout << "The acceptance rate for mu was " << vAccept[ 0 ]/ nQtySample << " and for sigma " << vAccept[1] / nQtySample << endl;
+	cout << "The acceptance rate for beta0 was " << vAccept[ 0 ]/ nQtySample << " and for beta1 " << vAccept[1] / nQtySample << endl;
 
 
 }

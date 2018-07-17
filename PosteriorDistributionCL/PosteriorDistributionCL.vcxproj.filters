@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="TestCode">
+      <UniqueIdentifier>{e9f0173a-8201-4b1d-94f4-ec24a944c8d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PosteriorDistribution.h">
@@ -62,5 +65,10 @@
     <ClCompile Include="LogisticRegressionPosterior.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CheckBLRM.R">
+      <Filter>TestCode</Filter>
+    </None>
   </ItemGroup>
 </Project>
