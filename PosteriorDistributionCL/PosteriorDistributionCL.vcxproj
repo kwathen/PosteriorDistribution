@@ -105,6 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../../boost_1_67_0</AdditionalIncludeDirectories>
+      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,6 +151,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Distribution.h" />
+    <ClInclude Include="Functions.h" />
+    <ClInclude Include="LogisticRegressionPosterior.h" />
     <ClInclude Include="NormalDistribution.h" />
     <ClInclude Include="PosteriorDistribution.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -157,9 +160,12 @@
     <ClInclude Include="RandomWalkMetropHast.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="SimpleNormalPosterior.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Distribution.cpp" />
+    <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="LogisticRegressionPosterior.cpp" />
     <ClCompile Include="NormalDistribution.cpp" />
     <ClCompile Include="PosteriorDistribution.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -168,6 +174,7 @@
     <ClCompile Include="RandomWalkMetropHast.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="SimpleNormalPosterior.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

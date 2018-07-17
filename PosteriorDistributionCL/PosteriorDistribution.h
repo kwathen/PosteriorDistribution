@@ -1,26 +1,23 @@
 #pragma once
 
-#include <vector>
+#include <boost/numeric/ublas/matrix.hpp> 
+#include <boost/numeric/ublas/vector.hpp> 
 #include "NormalDistribution.h"
 
 class PosteriorDistribution
 {
 public:
-	PosteriorDistribution();
-	~PosteriorDistribution();
-	double operator()(const std::vector<double>  & vParams);
-	double CalcualteLogPrior(const std::vector<double> & vParams);
-	double CalculateLogLikelihood(const std::vector<double> & vParams);
+	PosteriorDistribution() {};
+	~PosteriorDistribution() {};
+	//virtual double operator()(const std::vector<double>  & vParams);
+	virtual double CalculateLogPriorPlusLogLikelihood(const boost::numeric::ublas::vector<double>  & vParams);
+	virtual double CalcualteLogPrior(const boost::numeric::ublas::vector<double> & vParams) = 0;
+	virtual double CalculateLogLikelihood(const boost::numeric::ublas::vector<double> & vParams) =0;
 
-	void SetData(std::vector<double> & vData);
-	void SetPrior(double dPriorMean, double dPriorSD);
-	void GetSample(int nQtySample, int nBurnIn, std::vector<double> &vSamples);
+	virtual void SetData(boost::numeric::ublas::vector<double> & vData) {};
+	virtual void SetPrior(double dPriorMean, double dPriorSD) {};
+	virtual void GetSample(int nQtySample, int nBurnIn, boost::numeric::ublas::matrix<double> &mSamples);
 
-private:
-	std::vector<double>			m_vData;
-	double						m_dPriorMean;
-	double						m_dPriorSD;
-	int                         m_nQtyDataPoints;
-	NormalDistribution          m_PriorMu;
+	
 
 };

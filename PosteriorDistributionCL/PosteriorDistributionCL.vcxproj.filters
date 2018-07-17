@@ -27,6 +27,15 @@
     <ClInclude Include="NormalDistribution.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleNormalPosterior.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LogisticRegressionPosterior.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PosteriorDistributionCL.cpp">
@@ -42,6 +51,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NormalDistribution.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleNormalPosterior.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LogisticRegressionPosterior.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

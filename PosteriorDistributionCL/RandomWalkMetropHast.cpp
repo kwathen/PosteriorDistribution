@@ -13,7 +13,7 @@ using namespace boost::math;
 
 RandomWalkMetropHast::RandomWalkMetropHast( PosteriorDistribution & post )
 {
-	m_Post = post;
+	m_ptrPost = &post;
 }
 
 
@@ -22,24 +22,23 @@ RandomWalkMetropHast::~RandomWalkMetropHast()
 }
 
 
-void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, vector<double> &vSamples)
+void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, boost::numeric::ublas::matrix<double> &mSamples)
 {
-
-
-	cout.precision(3);
-
-	vSamples.resize(nQtySample, 0.0);
-	SetJumpDistributions();
 
 
 	//For Proof of concept just setting this to 2, which should come from the posterior distribution 
 	int nQtyParams = 2;
 
+	cout.precision(3);
+	mSamples.resize(nQtySample, nQtyParams, 0.0);
+	SetJumpDistributions();
+
+
 	boost::random::uniform_01<> unif;
 	//Set the intial value
 
-	vector<double> vParams(2, 0);
-	vector<double> vParamsProp(2, 0);
+	boost::numeric::ublas::vector<double> vParams(nQtyParams, 0);
+	boost::numeric::ublas::vector<double> vParamsProp(nQtyParams, 0);
 	int i = 0;
 
 	for (i = 0; i < nQtyParams; ++i)
@@ -49,9 +48,9 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, vector<double> &v
 
 
 	//Make sure the Var > 0
-	vParams[1] = max(vParams[1], -vParams[1]);
+	//vParams[1] = max(vParams[1], -vParams[1]);
 
-	double dLogPriorPlusLogLike = m_Post(vParams);
+	double dLogPriorPlusLogLike = m_ptrPost->CalculateLogPriorPlusLogLikelihood(vParams);
 	double dLogPriorPlusLogLikeProp = 0.0;
 	double dRatio = 0.0;
 
@@ -69,10 +68,10 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, vector<double> &v
 			vParamsProp[iParam] = vParams[iParam] + m_vJumpDist[iParam].GetValue();
 
 			//TODO: Make this more general for checking bounds
-			if (iParam == 1)  //on the Std Dev param need to make sure > 0
-				vParamsProp[1] = max(vParamsProp[1], 0.0001);
+			//if (iParam == 1)  //on the Std Dev param need to make sure > 0
+			//	vParamsProp[1] = max(vParamsProp[1], 0.0001);
 
-			dLogPriorPlusLogLikeProp = m_Post(vParamsProp);  //Calculate the log-like + log-prior
+			dLogPriorPlusLogLikeProp = m_ptrPost->CalculateLogPriorPlusLogLikelihood(vParamsProp);  //Calculate the log-like + log-prior
 			dRatio = exp(std::min(0.0, dLogPriorPlusLogLikeProp - dLogPriorPlusLogLike));
 
 			if (unif(GLOBALGEN) < dRatio) //#Accept the move
@@ -85,7 +84,6 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, vector<double> &v
 
 	}
 
-
 	vAccept.resize(nQtyParams, 0.0); // Reset to 0
 	for (i = 0; i < nQtySample; ++i)
 	{
@@ -95,10 +93,10 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, vector<double> &v
 			vParamsProp[iParam] = vParams[iParam] + m_vJumpDist[iParam].GetValue( );
 
 			//TODO: Make this more general for checking bounds
-			if (iParam == 1)  //on the Std Dev param need to make sure > 0
-				vParamsProp[1] = max(vParamsProp[1], 0.0001);
+			//if (iParam == 1)  //on the Std Dev param need to make sure > 0
+			//	vParamsProp[1] = max(vParamsProp[1], 0.0001);
 
-			dLogPriorPlusLogLikeProp = m_Post(vParamsProp);  //Calculate the log-like + log-prior
+			dLogPriorPlusLogLikeProp = m_ptrPost->CalculateLogPriorPlusLogLikelihood(vParamsProp);  //Calculate the log-like + log-prior
 			dRatio = exp(std::min(0.0, dLogPriorPlusLogLikeProp - dLogPriorPlusLogLike));
 
 			if (unif(GLOBALGEN) < dRatio) //#Accept the move
@@ -109,8 +107,15 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, vector<double> &v
 			}
 
 		}
-		cout << i << "\t" << vParams[0] << "\t" << vParams[1] << endl;
-		vSamples[i] = vParams[0];
+		if( m_bPrint )
+			cout << i << "\t" << vParams[0] << "\t" << vParams[1] << endl;
+		
+		//Save the params to be returned
+		for (iParam = 0; iParam < nQtyParams; ++iParam)
+		{
+			mSamples(i, iParam) = vParams[iParam];
+		}
+		//vSamples[i] = vParams[0];
 
 	}
 	cout << "The acceptance rate for mu was " << vAccept[ 0 ]/ nQtySample << " and for sigma " << vAccept[1] / nQtySample << endl;
@@ -132,8 +137,8 @@ void RandomWalkMetropHast::SetJumpDistributions()
 
 	boost::random::uniform_01<> unif;
 	//Set the intial value
-	vector<double> vParams(2, 0);
-	vector<double> vParamsProp(2, 0);
+	boost::numeric::ublas::vector<double> vParams(2, 0);
+	boost::numeric::ublas::vector<double> vParamsProp(2, 0);
 
 	for (i = 0; i < nQtyParams; ++i)
 	{
@@ -142,9 +147,9 @@ void RandomWalkMetropHast::SetJumpDistributions()
 	}
 
 	//Make sure the Var > 0
-	vParams[1] = max(vParams[1], -vParams[1]);
+	//vParams[1] = max(vParams[1], -vParams[1]);
 	vParamsProp[1] = vParams[1];
-	double dLogPriorPlusLogLike = m_Post(vParams);
+	double dLogPriorPlusLogLike = m_ptrPost->CalculateLogPriorPlusLogLikelihood(vParams);
 	double dLogPriorPlusLogLikeProp = 0.0;
 
 	//We are trying to set the jump std dev before we start the burn in and sampling of the chain
@@ -152,8 +157,8 @@ void RandomWalkMetropHast::SetJumpDistributions()
 	//if all paramters have an acceptance rate > 0.2 and <0.6 then we are done.
 	//TODO: Check the cutoffs of 0.2 and 0.6
 
-	int nMaxAdj = 10;
-	int nAdjChainLen = 250;
+	int nMaxAdj = 15;
+	int nAdjChainLen = 500;
 	int iParam = 0;
 	vector< double > vAccept;
 	double dRatio = 0.0;
@@ -170,10 +175,10 @@ void RandomWalkMetropHast::SetJumpDistributions()
 				vParamsProp[iParam] = vParams[iParam] + m_vJumpDist[iParam].GetValue( );
 
 				//TODO: Make this more general for checking bounds
-				if (iParam == 1)  //on the Std Dev param need to make sure > 0
-					vParamsProp[1] = max(vParamsProp[1], 0.0001);
+				//if (iParam == 1)  //on the Std Dev param need to make sure > 0
+				//	vParamsProp[1] = max(vParamsProp[1], 0.0001);
 
-				dLogPriorPlusLogLikeProp = m_Post(vParamsProp);  //Calculate the log-like + log-prior
+				dLogPriorPlusLogLikeProp = m_ptrPost->CalculateLogPriorPlusLogLikelihood(vParamsProp);  //Calculate the log-like + log-prior
 				dRatio = exp(std::min(0.0, dLogPriorPlusLogLikeProp - dLogPriorPlusLogLike));
 
 				if (unif(GLOBALGEN) < dRatio) //#Accept the move
