@@ -14,8 +14,10 @@ public:
 	virtual double CalcualteLogPrior(const boost::numeric::ublas::vector<double> & vParams) = 0;
 	virtual double CalculateLogLikelihood(const boost::numeric::ublas::vector<double> & vParams) =0;
 
-	virtual void SetData(boost::numeric::ublas::vector<double> & vData) {};
+
+	virtual void SetData(struct & sData ) {};
 	virtual void SetPrior(double dPriorMean, double dPriorSD) {};
+
 	virtual void GetSample(int nQtySample, int nBurnIn, boost::numeric::ublas::matrix<double> &mSamples);
 
 	

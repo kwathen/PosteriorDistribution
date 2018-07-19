@@ -67,7 +67,7 @@ void LogisticRegressionPosterior::SetData(const std::vector<double> & vDose, con
 {
 	m_vDose = vDose;
 	m_vEvent = vEvent;
-	m_nQtyDataPoints = vDose.size();
+	m_nQtyDataPoints = static_cast<int>( vDose.size() );
 	
 
 }

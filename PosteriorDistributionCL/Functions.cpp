@@ -7,7 +7,7 @@ bool InvertMatrix(const boost::numeric::ublas::matrix<double>& input, boost::num
 
 	matrix<double> A(input);
 	pmatrix pm(A.size1());
-	int res = lu_factorize(A, pm);
+	int res = static_cast<int>( lu_factorize(A, pm) );
 
 	if (res != 0) 
 		return false;

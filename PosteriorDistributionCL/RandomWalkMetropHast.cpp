@@ -30,7 +30,7 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, boost::numeric::u
 	int nQtyParams = 2;
 
 	cout.precision(3);
-	mSamples.resize(nQtySample, nQtyParams, -1000.0);
+	mSamples.resize(nQtySample, nQtyParams, false);
 	SetJumpDistributions();
 
 
@@ -193,7 +193,7 @@ void RandomWalkMetropHast::SetJumpDistributions()
 		}
 
 
-		bool bUpdateJump = false;
+		 bUpdateJump = false;
 		//Check the acceptance and update the Std Dev of the jump variance if needed
 		//TODO: This is not the optimal way, I had a more efficient way something like a bisection method to get to the desired accepatece rate
 
