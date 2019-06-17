@@ -73,8 +73,9 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, boost::numeric::u
 
 			dLogPriorPlusLogLikeProp = m_ptrPost->CalculateLogPriorPlusLogLikelihood(vParamsProp);  //Calculate the log-like + log-prior
 			dRatio = exp(std::min(0.0, dLogPriorPlusLogLikeProp - dLogPriorPlusLogLike));
+			dRatio = exp( dLogPriorPlusLogLikeProp - dLogPriorPlusLogLike);
 
-			if (unif(GLOBALGEN) < dRatio) //#Accept the move
+			if (unif(GLOBALGEN) <= dRatio) //#Accept the move
 			{
 				vParams = vParamsProp;
 				dLogPriorPlusLogLike = dLogPriorPlusLogLikeProp;
@@ -83,7 +84,6 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, boost::numeric::u
 		}
 
 	}
-
 	vAccept.resize(nQtyParams, 0.0); // Reset to 0
 	for (i = 0; i < nQtySample; ++i)
 	{
@@ -98,8 +98,9 @@ void RandomWalkMetropHast::Sample(int nQtySample, int nBurnIn, boost::numeric::u
 
 			dLogPriorPlusLogLikeProp = m_ptrPost->CalculateLogPriorPlusLogLikelihood(vParamsProp);  //Calculate the log-like + log-prior
 			dRatio = exp(std::min(0.0, dLogPriorPlusLogLikeProp - dLogPriorPlusLogLike));
+			dRatio = exp( dLogPriorPlusLogLikeProp - dLogPriorPlusLogLike);
 
-			if (unif(GLOBALGEN) < dRatio) //#Accept the move
+			if (unif(GLOBALGEN) <= dRatio) //#Accept the move
 			{
 				vAccept[iParam]++;
 				vParams = vParamsProp;
@@ -157,23 +158,24 @@ void RandomWalkMetropHast::SetJumpDistributions()
 	//if all paramters have an acceptance rate > 0.2 and <0.6 then we are done.
 	//TODO: Check the cutoffs of 0.2 and 0.6
 
-	int nMaxAdj = 15;
-	int nAdjChainLen = 500;
+	int nMaxAdj = 30;
+	int nAdjChainLen = 50000;
 	int iParam = 0;
 	vector< double > vAccept;
 	double dRatio = 0.0;
 	
 	bool bUpdateJump = false;
+	vAccept.resize(nQtyParams, 0.0); // Reset to 0
 	for (int j = 0; j < nMaxAdj; ++j)
 	{
-		vAccept.resize(nQtyParams, 0.0); // Reset to 0
+		vAccept[0] = 0;
+		vAccept[1] = 0;
 		for (i = 0; i < nAdjChainLen; ++i)
 		{
 			//One parameter at a time updating
 			for (iParam = 0; iParam < nQtyParams; ++iParam)
 			{
 				vParamsProp[iParam] = vParams[iParam] + m_vJumpDist[iParam].GetValue( );
-
 				//TODO: Make this more general for checking bounds
 				//if (iParam == 1)  //on the Std Dev param need to make sure > 0
 				//	vParamsProp[1] = max(vParamsProp[1], 0.0001);
@@ -192,7 +194,7 @@ void RandomWalkMetropHast::SetJumpDistributions()
 
 		}
 
-
+		
 		 bUpdateJump = false;
 		//Check the acceptance and update the Std Dev of the jump variance if needed
 		//TODO: This is not the optimal way, I had a more efficient way something like a bisection method to get to the desired accepatece rate
@@ -200,18 +202,21 @@ void RandomWalkMetropHast::SetJumpDistributions()
 		double dSigma, dMu;
 		for (iParam = 0; iParam < nQtyParams; ++iParam)
 		{
-			
-			if (vAccept[iParam] / nAdjChainLen < 0.2) // Need a smaller jump variance 
+			cout << "Parameter " << iParam << " Acceptance rate " << vAccept[iParam] / (1.0*nAdjChainLen) << "  ";
+
+			if (vAccept[iParam] / (1.0*nAdjChainLen) < .15) // Need a smaller jump variance 
 			{
+				cout << "Decreasing Var" << endl;
 				m_vJumpDist[iParam].GetParameters( dMu, dSigma );
 				bUpdateJump = true;
-				m_vJumpDist[iParam] =  NormalDistribution(0, dSigma /2.0);  //Cut the StdDev in half
+				m_vJumpDist[iParam] =  NormalDistribution(dMu, dSigma /1.25);  //Cut the StdDev in half
 			}
-			else if (vAccept[iParam] / nAdjChainLen > 0.6) // Need a larger jump variance 
+			else if (vAccept[iParam] / (1.0*nAdjChainLen) > 0.2) // Need a larger jump variance 
 			{
-				m_vJumpDist[iParam].GetParameters(dSigma, dMu);
+				cout << "Increasing Var" << endl;
+				m_vJumpDist[iParam].GetParameters(dMu, dSigma);
 				bUpdateJump = true;
-				m_vJumpDist[iParam] = NormalDistribution(0, dSigma * 1.75);  //Cut the StdDev in half
+				m_vJumpDist[iParam] = NormalDistribution(dMu, dSigma * 1.15);  //Cut the StdDev in half
 			}
 		}
 		if (bUpdateJump == false)
